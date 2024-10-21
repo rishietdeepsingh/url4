@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Claim Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Fullscreen video */
+        video.bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1; /* Make sure the video is behind the content */
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1; /* Ensure content stays above video */
+        }
+
+        .container:before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: linear-gradient(135deg, #00cbe6, #000);
+            z-index: -1;
+            border-radius: 15px;
+            filter: blur(20px);
+        }
+
+        .verovital-logo {
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        input[type="text"] {
+            padding: 9px 0px;
+            width: 100%;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            transition: border-color 0.3s;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #ffffff;
+            color: black;
+            border: black;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 0px 8px 16px rgba(0, 123, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #loading {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            background-color: #d0eaff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #progress {
+            height: 30px;
+            width: 0%;
+            background-color: white;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+
+        #results {
+            margin-top: 20px;
+            background-color: #f7faff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: left;
+        }
+
+        #results h2 {
+            color: #0056b3;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        #results p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        /* YouTube Icon */
+        .yt-icon {
+            margin-bottom: 20px;
+        }
+
+        .yt-icon svg {
+            width: 80px;
+            height: 60px;
+            fill: #ff0000;
+        }
+
+        .input-section {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Video -->
+    <video class="bg-video" autoplay muted loop>
+        <source src="WhatsApp Video 2024-10-21 at 7.03.17 PM.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <!-- VeroVital Logo Placeholder -->
+        <div class="verovital-logo">
+            <img src="WhatsApp_Image_2024-10-21_at_9.16.50_AM-removebg-preview-removebg-preview.png" alt="VeroVital Logo">
+        </div>
+        
+        <!-- YouTube Icon -->
+        <!-- Title -->
+        <h1>YouTube Claim Checker</h1>
+        
+        <!-- Claims Section -->
+        <div id="results"></div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <input type="text" id="youtubeUrl" placeholder="Enter YouTube URL" />
+            <button id="checkClaims">Check Claims</button>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading">
+            <div id="progress">0%</div>
+        </div>
+    </div>
+
+    <script>
+        const claims = {
+            "taking Benadryl is not healthy for your brain and it causes dementia.": "This claim lacks definitive causation proof.",
+            "The active ingredient in Benadryl is called diphenhydramine.": "True, diphenhydramine is the active ingredient.",
+            "It's an antihistamine.": "True, it is used to treat allergic reactions.",
+            "It's a first-generation antihistamine.": "True, diphenhydramine is a first-generation antihistamine.",
+            "The FAA doesn't allow pilots to fly after taking Benadryl for at least 60 hours.": "True, due to its lasting impact on cognition.",
+            "The drug crosses the blood/brain barrier.": "True, diphenhydramine crosses this barrier.",
+            "Dementia is a general term for impairment in cognition.": "True, dementia refers to cognitive impairment.",
+            "Alzheimer's disease is the most well-known form of dementia.": "True, Alzheimer's is a common type of dementia.",
+            "The study looked at a class of drugs called anticholinergics.": "True, anticholinergics include drugs like Benadryl.",
+            "Research suggests dementia risk is cumulative.": "True, cumulative exposure to anticholinergics may increase risk."
+        };
+
+        document.getElementById('checkClaims').addEventListener('click', function() {
+            const url = document.getElementById('youtubeUrl').value;
+            if (url) {
+                document.getElementById('results').innerHTML = '';
+                document.getElementById('results').style.display = 'none';
+                document.getElementById('loading').style.display = 'block';
+                startLoading();
+                setTimeout(() => {
+                    const videoTranscript = [
+                        "taking Benadryl is not healthy for your brain and it causes dementia.",
+                        "The active ingredient in Benadryl is called diphenhydramine.",
+                        "It's an antihistamine.",
+                        "It's a first-generation antihistamine.",
+                        "The FAA doesn't allow pilots to fly after taking Benadryl for at least 60 hours.",
+                        "The drug crosses the blood/brain barrier.",
+                        "Dementia is a general term for impairment in cognition.",
+                        "Alzheimer's disease is the most well-known form of dementia.",
+                        "The study looked at a class of drugs called anticholinergics.",
+                        "Research suggests dementia risk is cumulative."
+                    ];
+
+                    videoTranscript.forEach((claim, index) => {
+                        const claimResult = claims[claim] || "Nothing major is said.";
+                        const claimElement = document.createElement('p');
+                        claimElement.textContent = `Claim: ${claim} - Result: ${claimResult}`;
+                        document.getElementById('results').appendChild(claimElement);
+                    });
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('results').style.display = 'block';
+                }, 3000);
+            }
+        });
+
+        function startLoading() {
+            const progressElement = document.getElementById('progress');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width += 10;
+                    progressElement.style.width = width + '%';
+                    progressElement.textContent = width + '%';
+                }
+            }, 300);
+        }
+    </script>
+</body>
+</html>
