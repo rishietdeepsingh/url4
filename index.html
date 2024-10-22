@@ -193,21 +193,48 @@
         </div>
     </div>
 
-  <script>
-        const claims = {
-            "taking Benadryl is not healthy for your brain and it causes dementia.": "This claim lacks definitive causation proof.",
-            "The active ingredient in Benadryl is called diphenhydramine.": "True, diphenhydramine is the active ingredient.",
-            "It's an antihistamine.": "True, it is used to treat allergic reactions.",
-            "It's a first-generation antihistamine.": "True, diphenhydramine is a first-generation antihistamine.",
-            "The FAA doesn't allow pilots to fly after taking Benadryl for at least 60 hours.": "True, due to its lasting impact on cognition.",
-            "The drug crosses the blood/brain barrier.": "True, diphenhydramine crosses this barrier.",
-            "Dementia is a general term for impairment in cognition.": "True, dementia refers to cognitive impairment.",
-            "Alzheimer's disease is the most well-known form of dementia.": "True, Alzheimer's is a common type of dementia.",
-            "The study looked at a class of drugs called anticholinergics.": "True, anticholinergics include drugs like Benadryl.",
-            "Research suggests dementia risk is cumulative.": "True, cumulative exposure to anticholinergics may increase risk."
+    <script>
+        const claimsByUrl = {
+            "https://www.youtube.com/watch?v=58bme41mMyc&t=2s": {
+                "taking Benadryl is not healthy for your brain and it causes dementia.": "This claim lacks definitive causation proof.",
+                "The active ingredient in Benadryl is called diphenhydramine.": "True, diphenhydramine is the active ingredient.",
+                "It's an antihistamine.": "True, it is used to treat allergic reactions.",
+                "It's a first-generation antihistamine.": "True, diphenhydramine is a first-generation antihistamine.",
+                "The FAA doesn't allow pilots to fly after taking Benadryl for at least 60 hours.": "True, due to its lasting impact on cognition.",
+                "The drug crosses the blood/brain barrier.": "True, diphenhydramine crosses this barrier.",
+                "Dementia is a general term for impairment in cognition.": "True, dementia refers to cognitive impairment.",
+                "Alzheimer's disease is the most well-known form of dementia.": "True, Alzheimer's is a common type of dementia.",
+                "The study looked at a class of drugs called anticholinergics.": "True, anticholinergics include drugs like Benadryl.",
+                "Research suggests dementia risk is cumulative.": "True, cumulative exposure to anticholinergics may increase risk."
+            },
+            "https://www.youtube.com/watch?v=Oj9dRFRuodM": {
+                "Shoulder Mobility Test": "Correct, the Apley Scratch Test is indeed used to evaluate shoulder range of motion.",
+                "Developing Allergies": "Correct, people can develop allergies later in life or outgrow allergies from childhood.",
+                "Ear Popping": "Correct, the sensation of ear popping is related to the equalization of pressure in the eustachian tube.",
+                "Milk Choices": "Mostly correct, different types of milk have varied nutritional values. Almond milk is lower in protein compared to cow’s milk.",
+                "Sugar Rush": "Correct, research shows that the idea of a 'sugar rush' is a myth, but sugar crashes due to insulin spikes are real.",
+                "Metabolism and Weight": "Correct, factors like metabolism, mental health, and behaviors (e.g., fidgeting) can influence weight gain/loss.",
+                "Shellfish Reaction": "Correct, vomiting after eating shellfish could indicate a shellfish allergy or anaphylaxis.",
+                "White vs. Brown Bread": "Correct, whole grain bread provides more fiber and can help control blood sugar levels better than white bread.",
+                "Fruit and Sugar": "Correct, eating whole fruit is healthy due to the fiber content, despite the sugar. Fruit juices are not as beneficial.",
+                "Water Intake": "Correct, monitoring hydration by urine color rather than a fixed amount of water is in line with guidelines."
+            },
+            "https://www.youtube.com/watch?v=SJDzBM-KaoA": {
+                "Water Consumption (17.50s–31.03s)": "Drinking water consistently throughout the day is more effective than consuming a large amount at once. The body can only absorb a limited amount of water at a time, with excess being excreted as urine.",
+                "Inhaling vs. Exhaling (33.24s–58.21s)": "Inhalation provides essential oxygen, but exhalation is equally important for cleansing the body by removing carbon dioxide (CO2).",
+                "Seltzer Water vs. Flat Water (160.72s–197.23s)": "Sparkling water is generally safe for most people, though those with acid reflux may experience worsened symptoms. Seltzer is a healthier alternative to sugary sodas and is similar to flat water in nutritional value.",
+                "Pain Perception (96.62s–135.16s)": "Anticipation and mental preparation can heighten pain perception, making even minor injuries, like paper cuts, feel more intense. Pain management techniques can help reduce the perceived intensity of pain.",
+                "Blood Types and Illness (216.14s–238.00s)": "Certain illnesses may occur more frequently in individuals with specific blood types. However, this information is not practical since blood types are immutable.",
+                "Bra Wearing 24/7 (342.57s–382.03s)": "Continuous bra wear is unnecessary; discomfort should prompt a consultation with a doctor. Early detection of issues can enhance quality of life and longevity.",
+                "Over-the-Counter Medications and Weight (383.18s–414.01s)": "Over-the-counter medication dosages are not typically weight-based for adults, with exceptions like Plan B, which may be less effective for individuals over certain weights."
+            }
         };
     
-        const correctYouTubeUrl = "https://www.youtube.com/watch?v=58bme41mMyc&t=2s";
+        const validUrls = [
+            "https://www.youtube.com/watch?v=58bme41mMyc&t=2s",
+            "https://www.youtube.com/watch?v=Oj9dRFRuodM",
+            "https://www.youtube.com/watch?v=SJDzBM-KaoA"
+        ];
     
         document.getElementById('checkClaims').addEventListener('click', function() {
             const url = document.getElementById('youtubeUrl').value;
@@ -224,14 +251,14 @@
                 if (width >= 100) {
                     clearInterval(interval);
                 } else {
-                    if (url === correctYouTubeUrl) {
+                    if (validUrls.includes(url)) {
                         width += 10;
                         progressElement.style.width = width + '%';
                         progressElement.textContent = width + '%';
     
                         if (width === 100) {
                             clearInterval(interval);
-                            displayClaims();
+                            displayClaims(url);
                         }
                     } else {
                         if (width < 50) {
@@ -251,24 +278,25 @@
             }, 300);
         }
     
-        function displayClaims() {
-            const videoTranscript = [
-                "taking Benadryl is not healthy for your brain and it causes dementia.",
-                "The active ingredient in Benadryl is called diphenhydramine.",
-                "It's an antihistamine.",
-                "It's a first-generation antihistamine.",
-                "The FAA doesn't allow pilots to fly after taking Benadryl for at least 60 hours.",
-                "The drug crosses the blood/brain barrier.",
-                "Dementia is a general term for impairment in cognition.",
-                "Alzheimer's disease is the most well-known form of dementia.",
-                "The study looked at a class of drugs called anticholinergics.",
-                "Research suggests dementia risk is cumulative."
-            ];
+        function displayClaims(url) {
+            const claims = claimsByUrl[url];
+            
+            // Check if claims are available for the URL
+            if (!claims) {
+                const errorElement = document.createElement('p');
+                errorElement.textContent = 'Transcript not available for this video.';
+                document.getElementById('results').appendChild(errorElement);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                return;
+            }
     
-            videoTranscript.forEach((claim) => {
-                const claimResult = claims[claim] || "Nothing major is said.";
+            const transcript = Object.keys(claims);
+    
+            transcript.forEach((claim) => {
+                const claimResult = claims[claim];
                 const claimElement = document.createElement('p');
-                claimElement.textContent = `Claim: ${claim} - Result: ${claimResult}`;
+                claimElement.textContent = `Claim: ${claim} - Key Points: ${claimResult}`;
                 document.getElementById('results').appendChild(claimElement);
             });
     
