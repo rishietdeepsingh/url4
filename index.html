@@ -193,7 +193,7 @@
         </div>
     </div>
 
-    <script>
+  <script>
         const claims = {
             "taking Benadryl is not healthy for your brain and it causes dementia.": "This claim lacks definitive causation proof.",
             "The active ingredient in Benadryl is called diphenhydramine.": "True, diphenhydramine is the active ingredient.",
@@ -206,54 +206,74 @@
             "The study looked at a class of drugs called anticholinergics.": "True, anticholinergics include drugs like Benadryl.",
             "Research suggests dementia risk is cumulative.": "True, cumulative exposure to anticholinergics may increase risk."
         };
-
+    
+        const correctYouTubeUrl = "https://www.youtube.com/watch?v=58bme41mMyc&t=2s";
+    
         document.getElementById('checkClaims').addEventListener('click', function() {
             const url = document.getElementById('youtubeUrl').value;
-            if (url) {
-                document.getElementById('results').innerHTML = '';
-                document.getElementById('results').style.display = 'none';
-                document.getElementById('loading').style.display = 'block';
-                startLoading();
-                setTimeout(() => {
-                    const videoTranscript = [
-                        "taking Benadryl is not healthy for your brain and it causes dementia.",
-                        "The active ingredient in Benadryl is called diphenhydramine.",
-                        "It's an antihistamine.",
-                        "It's a first-generation antihistamine.",
-                        "The FAA doesn't allow pilots to fly after taking Benadryl for at least 60 hours.",
-                        "The drug crosses the blood/brain barrier.",
-                        "Dementia is a general term for impairment in cognition.",
-                        "Alzheimer's disease is the most well-known form of dementia.",
-                        "The study looked at a class of drugs called anticholinergics.",
-                        "Research suggests dementia risk is cumulative."
-                    ];
-
-                    videoTranscript.forEach((claim, index) => {
-                        const claimResult = claims[claim] || "Nothing major is said.";
-                        const claimElement = document.createElement('p');
-                        claimElement.textContent = `Claim: ${claim} - Result: ${claimResult}`;
-                        document.getElementById('results').appendChild(claimElement);
-                    });
-
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('results').style.display = 'block';
-                }, 3000);
-            }
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            startLoading(url);
         });
-
-        function startLoading() {
+    
+        function startLoading(url) {
             const progressElement = document.getElementById('progress');
             let width = 0;
             const interval = setInterval(() => {
                 if (width >= 100) {
                     clearInterval(interval);
                 } else {
-                    width += 10;
-                    progressElement.style.width = width + '%';
-                    progressElement.textContent = width + '%';
+                    if (url === correctYouTubeUrl) {
+                        width += 10;
+                        progressElement.style.width = width + '%';
+                        progressElement.textContent = width + '%';
+    
+                        if (width === 100) {
+                            clearInterval(interval);
+                            displayClaims();
+                        }
+                    } else {
+                        if (width < 50) {
+                            width += 10;
+                            progressElement.style.width = width + '%';
+                            progressElement.textContent = width + '%';
+                        } else {
+                            clearInterval(interval);
+                            document.getElementById('loading').style.display = 'none';
+                            const errorElement = document.createElement('p');
+                            errorElement.textContent = '429 - You exceeded your current quota, please check your plan and billing details.';
+                            document.getElementById('results').appendChild(errorElement);
+                            document.getElementById('results').style.display = 'block';
+                        }
+                    }
                 }
             }, 300);
         }
+    
+        function displayClaims() {
+            const videoTranscript = [
+                "taking Benadryl is not healthy for your brain and it causes dementia.",
+                "The active ingredient in Benadryl is called diphenhydramine.",
+                "It's an antihistamine.",
+                "It's a first-generation antihistamine.",
+                "The FAA doesn't allow pilots to fly after taking Benadryl for at least 60 hours.",
+                "The drug crosses the blood/brain barrier.",
+                "Dementia is a general term for impairment in cognition.",
+                "Alzheimer's disease is the most well-known form of dementia.",
+                "The study looked at a class of drugs called anticholinergics.",
+                "Research suggests dementia risk is cumulative."
+            ];
+    
+            videoTranscript.forEach((claim) => {
+                const claimResult = claims[claim] || "Nothing major is said.";
+                const claimElement = document.createElement('p');
+                claimElement.textContent = `Claim: ${claim} - Result: ${claimResult}`;
+                document.getElementById('results').appendChild(claimElement);
+            });
+    
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+        }
     </script>
-</body>
-</html>
+    
